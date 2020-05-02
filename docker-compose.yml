@@ -2,14 +2,18 @@ version: '2'
 services:
   mariadb:
     image: 'bitnami/mariadb:10.1'
+    container_name: dbos
     environment:
       - MARIADB_USER=bn_owncloud
       - MARIADB_DATABASE=bitnami_owncloud
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - 'mariadb_data:/bitnami'
+    networks:
+       - db_net
   owncloud:
     image: 'bitnami/owncloud:10'
+    container_name: cloudos
     environment:
       - MARIADB_HOST=mariadb
       - MARIADB_PORT_NUMBER=3306
@@ -25,6 +29,8 @@ services:
       - '443:443'
     volumes:
       - 'owncloud_data:/bitnami'
+    networks:
+      - cloud_net
     depends_on:
       - mariadb
 volumes:
@@ -32,3 +38,8 @@ volumes:
     driver: local
   owncloud_data:
     driver: local
+networks:
+    - db_net:
+        driver: bridge
+    - cloud_net:
+         driver: bridge
